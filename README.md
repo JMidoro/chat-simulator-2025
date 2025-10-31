@@ -103,6 +103,21 @@ Authorization: Bearer <LLM_API_KEY>   # optional
 - Responses are returned as text (or OpenAI‑style shape); the UI parses lines into chat.
 - Bring your own model/server. High token throughput is recommended for a lively feed.
 
+## Username Anonymization (Keep it cozy 💜)
+
+- **Goal**: Never surface real usernames from the LLM or inputs. Keep everything anonymized and streamer-friendly.
+- **How it works**:
+  - On load, the app fetches a curated list from `valid_usernames.txt` via `/api/usernames`.
+  - When the LLM emits lines like `Someone123: message`, the app maps that speaker name to a safe, pre-approved username from the list.
+  - `@mentions` are also mapped to safe names when anonymization is enabled. Streamer mentions always become `@JoeyZeroTV`, and plain "Joey"/"JOEY" replacements are handled for standalone occurrences.
+  - Mapping is consistent for a session and color-coded to approximate twitch chat.
+- **Do we need a log of invalid usernames?**
+  - No. The anonymization only requires the committed `valid_usernames.txt`.
+  - If the valid list were ever empty, the app would fall back to the original names—so keep the list populated for privacy.
+- **Optional: Curating more safe usernames**
+  - The WS relay can log client-sent (already mapped) usernames to `logs/usernames.log` (best-effort). Review and curate before adding to the valid list.
+  - Reminder: `valid_usernames.txt` is public once committed. Keep it clean and non-identifying.
+
 ## Scripts
 
 - `npm run dev` — Next.js dev server
@@ -111,10 +126,16 @@ Authorization: Bearer <LLM_API_KEY>   # optional
 - `npm run db:push` — Push Prisma schema to SQLite
 - `npm run db:studio` — Prisma Studio
 
+## Roadmap / TODO
+
+- [ ] Publish model weights for the Twitch simulator model
+- [ ] Implement a higher-quality speech recognition polyfill (current browser API can be unreliable)
+- [ ] Add Discord integration to pick up other speakers in a voice call
+
 ## Notes
 
 - The chat parser enforces a small banned‑term list and handles username mentions.
-- Bracketed emotes like `[OMEGALUL]` render if known; unknown/broken ones are dropped.
+- Square brackets are expected to signal emotes like `[OMEGALUL]` to evaluate against known emotes and render if known; unknown/broken ones (likely hallucinated) are dropped.
 - Microphone permission is required for voice input.
 
 ---
