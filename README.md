@@ -118,6 +118,25 @@ Authorization: Bearer <LLM_API_KEY>   # optional
   - The WS relay can log client-sent (already mapped) usernames to `logs/usernames.log` (best-effort). Review and curate before adding to the valid list.
   - Reminder: `valid_usernames.txt` is public once committed. Keep it clean and non-identifying.
 
+## Stream Overlay (/chat) — Bring it into OBS
+
+- The `/chat` page is a minimal, no‑controls view designed to be dropped into streaming software as a browser source.
+- It connects to the same WebSocket relay and renders messages with emotes, keeping overhead low.
+
+### Use in OBS (local dev)
+
+1. Start the relay: `npm run ws`
+2. Start the app: `npm run dev`
+3. In OBS: Add → Browser Source → URL: `http://localhost:3000/chat`
+4. Set your desired size (e.g., 420×900). Crop or style to taste.
+
+Notes:
+
+- The overlay includes a subtle backdrop; you can theme it or make it transparent by customizing styles.
+- If your OBS runs on a different machine or origin, set the WS URL at build/run time:
+  - `NEXT_PUBLIC_WS_URL=ws://<host>:<port>` (defaults to port `3001`)
+  - Example: `NEXT_PUBLIC_WS_URL=ws://streampc.local:3001 npm run dev`
+
 ## Scripts
 
 - `npm run dev` — Next.js dev server
